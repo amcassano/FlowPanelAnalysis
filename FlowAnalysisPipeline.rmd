@@ -1,0 +1,47 @@
+---
+title: "Flow Analysis Pipeline"
+author: "Domenic Abbondanza & Lexi Cassano"
+date: "`r Sys.Date()`"
+output:
+    html_document:
+        df_print: tibble
+        highlight: tango
+        theme: united
+        toc: yes
+        toc_float:
+            collapsed: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+This code is for use in analyzing multi-parameter flow cytometry data. Data is treated as single cell data. Code uses the Spectre R package (https://immunedynamics.io/spectre/simple-discovery/) by Thomas Myles Ashhurst, Felix Marsh-Wakefield, and Givanna Putri. Code is written by Domenic Abbondanza and Lexi Cassano.
+
+# Set up
+
+## Install and load libraries
+### Install libraries
+Only run this chunk/code if libraries need to be installed.
+```{r install_libraries, eval=FALSE}
+install.packages("devtools")
+library(devtools)
+install.packages("tidyverse")
+devtools::install_github("https://github.com/ImmuneDynamics/spectre")
+```
+
+### Load libraries
+This code must be run every session
+```{r load_libraries}
+library(devtools)
+library(tidyverse)
+library(colorblindr)
+library(paletteer)
+library(utils)
+library(stringi)
+library(stringr)
+library(knitr)
+library(rmarkdown)
+library(Spectre)
+```
