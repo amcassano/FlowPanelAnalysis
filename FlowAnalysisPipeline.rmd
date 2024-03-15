@@ -44,4 +44,18 @@ library(stringr)
 library(knitr)
 library(rmarkdown)
 library(Spectre)
+Spectre::package.check() # Check that all required packages are installed
+Spectre::package.load() # Load required packages
+```
+
+### Set working directory
+```{r setwd}
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) ## set the working directory to the folder the active document is saved in
+PrimaryDirectory <- getwd()
+MetaDirectory <- paste0(PrimaryDirectory, "metadata", sep = "/") # there should be a folder with meta data files within the primary folder
+InputDirectory <- paste0(PrimaryDirectory, "input", sep = "/") # there should be a folder with th data within the primary folder
+if (!dir.exists(paste0(PrimaryDirectory, "output", sep = "/"))) { # creates an output folder if one doesn't exist already
+    dir.create(paste0(PrimaryDirectory, "output", sep = "/"))
+}
+OutputDirectory <- paste0(PrimaryDirectory, "output", sep = "/")
 ```
