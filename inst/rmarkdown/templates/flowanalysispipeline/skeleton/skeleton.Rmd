@@ -99,6 +99,27 @@ print(cell_data)
 
 #### Data transformation
 This is not needed if the channel value CSVs being imported are straight from FlowJo
+Ask Domenic about this bit
 ```{r transform_data, eval = FALSE}
+transformedDirectory <- paste0(OutputDirectory, "/TransformedData", sep = "")
+dir.create(transformedDirectory)
+setwd(transformedDirectory)
+
+as.matrix(names(cell_data))
+to_asinh <- names(cell_data)[c(1:26)] # check on the numbers thing here
+
+cofactor <- 500
+plot_against <- "CD25_asinh"
+
+cell_data <- Spectre::do.asinh(cell_data, to_asinh, cofactor)
+transformed_cols <- paste0(to_asinh, "_asinh")
+
+for (i in transformed_cols) {
+    Spectre::make.colour.plot(Spectre::do.subsample(cell_data, 20000), i, plot_against)
+}
+```
+
+#### Add metadata to the data table
+```{r add_metadata}
 
 ```
