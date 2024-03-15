@@ -50,11 +50,15 @@ Spectre::package.load() # Load required packages
 
 ### Set working directory
 ```{r setwd}
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) ## set the working directory to the folder the active document is saved in
+## set the working directory to the folder the active document is saved in - make sure this document is saved in the primary directory
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 PrimaryDirectory <- getwd()
-MetaDirectory <- paste0(PrimaryDirectory, "metadata", sep = "/") # there should be a folder with meta data files within the primary folder
-InputDirectory <- paste0(PrimaryDirectory, "input", sep = "/") # there should be a folder with th data within the primary folder
-if (!dir.exists(paste0(PrimaryDirectory, "output", sep = "/"))) { # creates an output folder if one doesn't exist already
+# there should be a folder with meta data files within the primary folder
+MetaDirectory <- paste0(PrimaryDirectory, "metadata", sep = "/")
+# there should be a folder with th data within the primary folder
+InputDirectory <- paste0(PrimaryDirectory, "input", sep = "/")
+# creates an output folder if one doesn't exist already
+if (!dir.exists(paste0(PrimaryDirectory, "output", sep = "/"))) {
     dir.create(paste0(PrimaryDirectory, "output", sep = "/"))
 }
 OutputDirectory <- paste0(PrimaryDirectory, "output", sep = "/")
