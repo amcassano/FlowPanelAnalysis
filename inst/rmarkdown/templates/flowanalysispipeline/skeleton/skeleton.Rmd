@@ -48,8 +48,8 @@ Spectre::package.check() # Check that all required packages are installed
 Spectre::package.load() # Load required packages
 ```
 
-### Set working directory
-```{r setwd}
+### Set directories
+```{r set_directories}
 ## set the working directory to the folder the active document is saved in - make sure this document is saved in the primary directory
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 PrimaryDirectory <- getwd()
@@ -62,4 +62,11 @@ if (!dir.exists(paste0(PrimaryDirectory, "output", sep = "/"))) {
     dir.create(paste0(PrimaryDirectory, "output", sep = "/"))
 }
 OutputDirectory <- paste0(PrimaryDirectory, "output", sep = "/")
+```
+
+
+## Import and prepare data
+### Import data
+```{r import_data}
+list.files(PrimaryDirectory)
 ```

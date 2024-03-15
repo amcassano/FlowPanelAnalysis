@@ -1,0 +1,4 @@
+name: FlowAnalysisPipeline
+description: >
+   Template for analyzing flow cytometry data for use by the Alegre lab at the University of Chicago
+create_dir: FALSE
