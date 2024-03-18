@@ -67,6 +67,14 @@ if (!dir.exists(OutputDirectory)) {
 
 ## Import and prepare data
 ### Import & Check data
+InputDirectory should contain a series of csv files with filenames matching those in the metadata file.
+CSV files should be the output from FlowJo of the scale values or channel values for each sample. Each sample gets its own CSV file. Each row is a different cell, each column is a different parameter (i.e. FSC-A, SSC-A, CD44, CD73 etc.)
+Metadata should have columns as follows:
+- 'Filename'
+- 'Sample'
+- 'Group'
+- 'Batch'
+- 'Cells per sample'
 ```{r import_data}
 # import data
 data_list <- Spectre::read.files(
@@ -121,5 +129,34 @@ for (i in transformed_cols) {
 
 #### Add metadata to the data table
 ```{r add_metadata}
+sample_info <- metadat[, c(1:4)]
+print(sample_info)
+
+counts <- metadat[, c(2, 5)]
+print(counts)
+
+cell_data <- Spectre::do.add.cols(
+    dat = cell_data,
+    base.col = "FileName",
+    add.dat = sample_info,
+    add.by = "Filename",
+    rmv.ext = TRUE
+)
+
+# replace "1" "2" "3" to match your group names, add more as necessary
+cell_data$Group <- factor(
+    x = cell_data$Group,
+    levels = c("1", "2", "3")
+)
+
+# replace "A" "B" "C" to match batches as necessary
+cell_data$Batch <- factor(
+    x = cell_data$Batch,
+    levels = c("A", "B", "C")
+)
+```
+
+#### Continue preparing data table
+```{r prepare_data}
 
 ```
