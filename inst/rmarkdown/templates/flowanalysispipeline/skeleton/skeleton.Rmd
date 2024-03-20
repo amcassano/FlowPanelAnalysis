@@ -62,6 +62,18 @@ OutputDirectory <- paste0(PrimaryDirectory, "/output", sep = "")
 if (!dir.exists(OutputDirectory)) {
     dir.create(OutputDirectory)
 }
+
+# creates an output folder for clustering results if one doesn't exist already
+ClusteringOutput <- paste0(OutputDirectory, "/clustering", sep = "")
+if (!dir.exists(ClusteringOutput)) {
+    dir.create(ClusteringOutput)
+}
+
+# creates an output folder for annotation results if one doesn't exist already
+AnnotationOutput <- paste0(OutputDirectory, "/annotation", sep = "")
+if (!dir.exists(AnnotationOutput)) {
+    dir.create(AnnotationOutput)
+}
 ```
 
 
@@ -158,5 +170,133 @@ cell_data$Batch <- factor(
 
 #### Continue preparing data table
 ```{r prepare_data}
+as.matrix(names(cell_data))
+
+cell_cols <- names(cell_data[, c(1:14)])
+as.matrix(cell_cols)
+
+experiment_name <- "Fill in your experiment name here"
+sample_col <- "Sample" # name of the sample column, should be Sample, change if not
+group_col <- "Group" # name of the group/condition column, change if necessary
+batch_col <- "Batch" # name of experiment batch column, change if necessary
+FlowSOM_metacluster_col <- "FlowSOM_metacluster" # name of flowSOM metacluster column, change if necessary
+```
+
+# Analysis
+## Clustering & Dimensionality reduction
+
+### Downsampling
+Downsampling is preformed prior to clustering so that the same number of cells are used from each sample. The Spectre package has a function for subsampling that we will use.
+
+```{r downsampling}
+data.frame(table(cell_data[[group_col]]))
+
+unique(cell_data[[group_col]])
+
+# the number of cells from each group - downsample to the lowest number of cells
+sub_targets <- c(623, 623, 623)
+
+downsampled <- Spectre::do.subsample(
+    dat = cell_data,
+    targets = sub_targets,
+    divide.by = group_col,
+    min.per = TRUE
+)
+```
+
+
+```{r reorder_cols}
+# maybe create a function here? to reorder columns as desired. take in a list in order and the dataframe and return the dataframe
+```
+
+### Dimensionality reduction
+
+#### PCA
+work in progress
+
+#### UMAP
+```{r umap}
+setwd(OutputDirectory)
+umap_output <- Spectre::run.umap(
+    dat = downsampled,
+    use.cols = cell_cols,
+    umap.x.name = "UMAP X",
+    umap.y.name = "UMAP Y",
+    umap.seed = 5,
+    neighbours = 10,
+    min_dist = 0.1
+)
+
+Spectre::make.colour.plot(
+    dat = umap_output,
+    x.axis = "UMAP X",
+    y.axis = "UMAP Y",
+    title = "UMAP"
+)
+
+# separate by marker
+Spectre::make.multi.plot(
+    dat = umap_output,
+    x.axis = "UMAP X",
+    y.axis = "UMAP Y",
+    plot.by = cell_cols,
+    figure.title = "UMAP divided by marker"
+)
+```
+
+### FlowSOM Clustering
+```{r clustering}
+setwd(ClusteringOutput)
+flowsom_clustering <- Spectre::run.flowsom(
+    dat = umap_output,
+    use.cols = cell_cols
+)
+
+Spectre::make.colour.plot(
+    dat = flowsom_clustering,
+    x.axis = "UMAP X",
+    y.axis = "UMAP Y",
+    col.axis = "FlowSOM_metacluster",
+    col.type = "factor",
+    add.label = TRUE,
+    title = "UMAP with clustering"
+)
+
+flowsom_clustering$FlowSOM_metacluster <- factor(
+    x = flowsom_clustering$FlowSOM_metacluster,
+    levels = c("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20")
+)
+Spectre::make.multi.plot(
+    dat = flowsom_clustering,
+    x.axis = "UMAP X",
+    y.axis = "UMAP Y",
+    "FlowSOM_metacluster",
+    FlowSOM_metacluster_col,
+    col.type = "factor"
+)
+```
+
+### Expression heatmap
+```{r expression_heatmap}
+exp <- Spectre::do.aggregate(
+    dat = flowsom_clustering,
+    use.cols = cell_cols,
+    by = "FlowSOM_metacluster"
+)
+
+Spectre::make.pheatmap(
+    dat = exp,
+    sample.col = "FlowSOM_metacluster",
+    plot.cols = cell_cols,
+    dendrograms = "row",
+    col.sep = c(3, 6, 11),
+    plot.title = "FlowSOM clustering by module"
+)
+```
+
+### DR plots
+
+### Annotate clusters
+```{r cluster_annotation}
 
 ```
